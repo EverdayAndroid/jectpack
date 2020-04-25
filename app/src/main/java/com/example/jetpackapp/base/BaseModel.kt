@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.ViewModelStore
 import com.example.jetpackapp.app.JetPackApplication
+import java.lang.Class as Class
 
 /**
   * @date: 2020/4/19
@@ -21,12 +22,16 @@ open class BaseModel:ViewModel() {
     //替代之前的FragmentActivity和Fragment，使用Application进行
     private var mFactory:ViewModelProvider.Factory = ViewModelProvider.AndroidViewModelFactory.getInstance(JetPackApplication.application.getInstance())
 
-    fun <T : ViewModel> FragmentActivity.createModel(model:Class<T>):T{
+    fun <T : ViewModel> FragmentActivity.createModel(model: Class<T>):T{
         return ViewModelProviders.of(this).get(model)
     }
 
-    fun <T:ViewModel> Fragment.createModel(model:Class<T>):T{
+    fun <T:ViewModel> Fragment.createModel(model: Class<T>):T{
         return ViewModelProviders.of(this).get(model)
+    }
+
+    fun init(){
+
     }
 
     /**
@@ -35,7 +40,7 @@ open class BaseModel:ViewModel() {
      * 下次直接进通过key进行获取对应model
      *  查看源码key值为：androidx.lifecycle.ViewModelProvider.DefaultKey:类名
      */
-    fun <T:ViewModel> createModel(model:Class<T>):T{
+    fun <T:ViewModel> createModel(model: Class<T>):T{
         return  ViewModelProvider(shareModel,mFactory).get(model)
     }
 

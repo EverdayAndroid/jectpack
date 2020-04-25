@@ -15,7 +15,7 @@ import java.lang.reflect.ParameterizedType
  */
 abstract class BaseActivity<V: BaseModel,T: ViewDataBinding>:AppCompatActivity() {
 
-    protected lateinit var mModel:Class<V>
+    protected lateinit var mModel:V
     protected lateinit var mBinding:T
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +28,15 @@ abstract class BaseActivity<V: BaseModel,T: ViewDataBinding>:AppCompatActivity()
     //监听数据
     protected abstract fun registeredLiveData()
 
-    protected val baseModel:ViewModel by lazy {
-        return@lazy BaseModel().createModel(mModel)
-    }
+//    private val baseModel:ViewModel by lazy {
+//        return@lazy BaseModel().createModel(mModel.javaClass)
+//    }
     //初始化
     private fun initView(){
         mBinding = DataBindingUtil.setContentView(this,getLayoutId())
         initCustomerStatus()
         getModelClass()
+        registeredLiveData()
     }
     //初始化数据
     protected abstract fun initData()
@@ -50,10 +51,9 @@ abstract class BaseActivity<V: BaseModel,T: ViewDataBinding>:AppCompatActivity()
         val genericSuperclass = javaClass.genericSuperclass
         if(genericSuperclass is ParameterizedType){
             val actualTypeArguments = genericSuperclass.actualTypeArguments
-            actualTypeArguments.forEach {
-                if(it is BaseModel){
-                    mModel = it as Class<V>
-                }
+            if(actualTypeArguments.size > 1){
+                val clazz = actualTypeArguments[0] as Class<V>
+                mModel = BaseModel().createModel(clazz)
             }
         }
     }

@@ -12,20 +12,34 @@ import androidx.lifecycle.Observer
   * @desc:  修复LiveData数据粘性
  */
 class LiveDataBus {
+
     companion object{
-        val liveDataBus = LiveDataBus()
-        val map = HashMap<String,BusMutableLiveData<Any>>()
-        fun <T> with(key:String,type:Class<T>): BusMutableLiveData<T> {
-            var mutableLiveData:BusMutableLiveData<Any>? = null
-            if(map.containsKey(key)){
-                mutableLiveData= map.get(key)
-            }else{
-                mutableLiveData = BusMutableLiveData<Any>()
-                map.put(key, mutableLiveData)
-            }
-            return mutableLiveData as BusMutableLiveData<T>
+        private lateinit var liveDataBus:LiveDataBus
+        private var map = HashMap<String,BusMutableLiveData<Any>>()
+        fun get():LiveDataBus{
+            liveDataBus = LiveDataBus()
+            return liveDataBus
         }
     }
+
+    fun <T> with(key:String,type:Class<T>): BusMutableLiveData<T> {
+        var mutableLiveData:BusMutableLiveData<Any>? = null
+        if(map.containsKey(key)){
+            mutableLiveData= map.get(key)
+        }else{
+            mutableLiveData = BusMutableLiveData<Any>()
+            map[key] = mutableLiveData
+        }
+        Log.e("TAG","${map.size} ============")
+        return mutableLiveData as BusMutableLiveData<T>
+    }
+
+    fun sendLiveData(key:String,type:Any){
+        Log.e("TAG","${map.size} =")
+        map[key]?.postValue(type)
+    }
+
+
 
 
     class BusMutableLiveData<T>: MutableLiveData<T>(){
@@ -34,7 +48,7 @@ class LiveDataBus {
             hook(observer)
         }
 
-        fun hook(observer:Observer<in T>){
+        private fun hook(observer:Observer<in T>){
             val listDataClass= LiveData::class.java
             Log.e("TAG","listDataClass  ${this::class.java.superclass?.superclass}")
             val mObservers = listDataClass.getDeclaredField("mObservers")
@@ -63,10 +77,10 @@ class LiveDataBus {
             val fieldLastVersion = wrapperClass?.getDeclaredField("mLastVersion")
             fieldLastVersion?.isAccessible = true
             //获取到mVersion
-            val fieldVersion = listDataClass.getField("mVersion")
+            val fieldVersion = listDataClass.getDeclaredField("mVersion")
             fieldVersion.isAccessible = true
             //获取到mVersion值
-            val versionVlaue = fieldVersion.get(listDataClass)
+            val versionVlaue = fieldVersion.get(this)
             //进行赋值
             fieldLastVersion?.set(observerWrapper,versionVlaue)
         }
