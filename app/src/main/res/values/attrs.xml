@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CustomImage">
+        <attr name="round" format="integer|dimension"/>
+        <attr name="type" format="enum">
+            <enum name="round_type" value="0"/>
+            <enum name="circle_type" value="1"/>
+            <enum name="rectangle_type" value="2"/>
+        </attr>
+        <!-- 边框 -->
+        <attr name="side" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomView">
+        <attr name="radius" format="dimension"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="circle_color" format="color"/>
+        <attr name="border_width" format="dimension"/>
+        <attr name="text" format="string"/>
+        <attr name="textColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textBold" format="float"/>
+        <attr name="style_enum" format="enum">
+            <enum name="style_fill" value="0"/>
+            <enum name="style_stroke" value="1"/>
+            <enum name="style_fill_stroke" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

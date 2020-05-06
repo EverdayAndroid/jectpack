@@ -23,10 +23,37 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <com.example.jetpackapp.base.CustomImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/iv"
+            app:side="5dp"
+            app:round="5dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <com.example.jetpackapp.base.CustomView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="50dp"
+            android:id="@+id/custom"
+            app:radius="50dp"
+            app:text="WT"
+            app:textSize="15dp"
+            app:textColor="@color/colorPrimary"
+            app:circle_color="@android:color/holo_red_dark"
+            app:backgroundColor="@android:color/holo_blue_dark"
+            app:border_width="5dp"
+            app:style_enum="style_fill"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn"
+            android:textStyle="bold"
             android:onClick="@{listene}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

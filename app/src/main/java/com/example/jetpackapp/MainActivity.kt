@@ -1,6 +1,8 @@
 package com.example.jetpackapp
 
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Display
 import android.view.View
 import androidx.lifecycle.Observer
 import com.example.jetpackapp.base.BaseActivity
@@ -30,11 +32,12 @@ class MainActivity : BaseActivity<MainActivityModel,ActivityMainBinding>(),View.
 
     override fun initData() {
         mModel.load()
+        window.attributes.width
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.btn -> Log.e("TAG",mBinding.mainDto!!.name)
+            R.id.custom -> Log.e("TAG",mBinding.mainDto!!.name)
         }
     }
 }
