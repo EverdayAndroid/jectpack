@@ -91,7 +91,7 @@ class CustomView : View {
 
     private fun initPaint(){
         maxWidth = context.resources.displayMetrics.widthPixels
-        maxHeight = DisplayUtils.getHeightPixels()-DisplayUtils.getNavigationBarHeight()
+        maxHeight = DisplayUtils.getHeightPixels()-DisplayUtils.getNavigationBarHeight()-DisplayUtils.getStatusBarHeight()
         maxTop = top
         mPaint.color = circle_color
         mPaint.strokeWidth = borderWidth
@@ -127,6 +127,7 @@ class CustomView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        Log.e("TAG","onDraw")
         val viewX = -custome_widht/2
         val viewY = -custome_height/2
         canvas?.translate(viewX,viewY)
@@ -139,6 +140,10 @@ class CustomView : View {
 //        }
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        Log.e("TAG","onMeasure")
+    }
     override fun layout(l: Int, t: Int, r: Int, b: Int) {
         super.layout(l, t, r, b)
     }
@@ -178,7 +183,7 @@ class CustomView : View {
             b = (t+custome_height).toInt()
             if(b > maxHeight){
                 b = maxHeight
-                t = maxHeight-height
+                t = maxHeight-custome_height.toInt()
                 Log.e("TAG","t=$t  getBottom=$bottom")
             }
             layout(l,t,r,b)

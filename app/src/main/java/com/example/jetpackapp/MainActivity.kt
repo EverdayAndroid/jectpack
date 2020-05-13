@@ -32,7 +32,7 @@ class MainActivity : BaseActivity<MainActivityModel,ActivityMainBinding>(),View.
 
     override fun initData() {
         mModel.load()
-        window.attributes.width
+
     }
 
     override fun onClick(v: View?) {

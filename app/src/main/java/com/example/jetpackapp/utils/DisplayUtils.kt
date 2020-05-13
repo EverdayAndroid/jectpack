@@ -46,4 +46,15 @@ object DisplayUtils {
         var height = resources.getDimensionPixelSize(resourceId);
         return height
     }
+
+    /**
+     * 获取手机状态栏高度
+     * @return height
+     */
+    fun getStatusBarHeight():Int{
+        val resources = JetPackApplication.application.applicationContext.resources
+        var resourceId= resources.getIdentifier("status_bar_height","dimen","android");
+        var height = resources.getDimensionPixelSize(resourceId);
+        return height
+    }
 }
