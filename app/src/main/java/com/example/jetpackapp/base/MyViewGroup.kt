@@ -10,6 +10,7 @@ import java.lang.Math.max
   * @author: wangTao
   * @email: wangtaohandsome@gmail.com
   * @desc:  1.ViewGroup开始测量自己的尺寸
+ * 18670301864
  * 2.为每个子View计算测量的限制信息
  * 3.把上一步确定的限制信息，传递给每一个子View，然后子View开始measure自己的尺寸
  * 4.获取子View测量完成后的尺寸
