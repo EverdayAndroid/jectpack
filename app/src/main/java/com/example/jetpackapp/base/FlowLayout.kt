@@ -2,6 +2,7 @@ package com.example.jetpackapp.base
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
@@ -59,26 +60,31 @@ class FlowLayout : ViewGroup {
             val child = getChildAt(index)
             measureChild(child,widthMeasureSpec,heightMeasureSpec)
             //获取到子View的测量宽高
-            var childWidht = child.measuredWidth
+            var childWidth = child.measuredWidth
             var childHeight = child.measuredHeight
 
             val layoutParams = child.layoutParams
             //当前的行剩余宽度是否可以放的下，下一个子View放不下换行
             //如果放不下，换行保存当前行的所有子View宽度，和高度
-            if(lineWidth + childWidht > widthSize){
+            if(lineWidth + childWidth > widthSize){
                 views?.add(lineViews!!)
                 lineViews = ArrayList()
                 flowLayoutWidth = flowLayoutWidth.coerceAtLeast(lineWidth)
-                flowLayoutHeight += childHeight
+                flowLayoutHeight += lineHeight
                 heights?.add(lineHeight)
                 lineWidth = 0
                 lineHeight = 0
             }
             lineViews?.add(child)
-            lineWidth += childWidht
+            lineWidth += childWidth
             lineHeight = lineHeight.coerceAtLeast(childHeight)
+            if(index == childCount-1){  //处理最后一行的高度
+                flowLayoutHeight += lineHeight
+                flowLayoutWidth = flowLayoutWidth.coerceAtLeast(lineWidth)
+                heights?.add(lineHeight)
+                views?.add(lineViews!!)
+            }
         }
-
         //判断FlowLayout宽度模式
         if(widthMode == MeasureSpec.EXACTLY){
             flowLayoutWidth = widthSize
@@ -99,21 +105,22 @@ class FlowLayout : ViewGroup {
         var top = 0
         var right = 0
         var bottom = 0
-
+        var currentY = 0  //记录当前y轴的高度
         val lineCount = views?.size
         for (index in 0 until (lineCount?:0)){
             val lineView = views!![index]
             val lineHeight = heights!![index]
             left = 0
-            top += bottom
-            bottom += lineHeight
+            top += currentY
             for (index in 0 until lineView.size){
-                val child = getChildAt(index)
+                val child = lineView[index]
                 right += child.measuredWidth
+                bottom = top+child.measuredHeight
                 child.layout(left,top,right,bottom)
                 left = right
             }
-
+            right = 0
+            currentY += lineHeight
 
 
         }

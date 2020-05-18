@@ -21,67 +21,67 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt2" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="100dp"
-            android:text="wt" />
+            android:text="wt3" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt4" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt5" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt6" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:text="wt7" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt8" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt9" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt10" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt11" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="wt" />
+            android:text="wt12" />
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="wt" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="wt" />
+            android:layout_height="120dp"
+            android:text="wt13" />
 
 
     </com.example.jetpackapp.base.FlowLayout>
