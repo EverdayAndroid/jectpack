@@ -111,7 +111,8 @@ class FlowLayout : ViewGroup {
             val lineView = views!![index]
             val lineHeight = heights!![index]
             left = 0
-            top += currentY
+            top = currentY
+            Log.e("FlowLayout","top=====>  $top")
             for (index in 0 until lineView.size){
                 val child = lineView[index]
                 right += child.measuredWidth
@@ -121,8 +122,6 @@ class FlowLayout : ViewGroup {
             }
             right = 0
             currentY += lineHeight
-
-
         }
     }
 
