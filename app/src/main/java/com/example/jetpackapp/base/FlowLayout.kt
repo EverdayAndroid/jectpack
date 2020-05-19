@@ -93,12 +93,29 @@ class FlowLayout : ViewGroup {
         if(heightMode == MeasureSpec.EXACTLY){
             flowLayoutHeight = heightSize
         }
+        //重新测量子view为 match_parent
+        remeasureChild()
         //FlowLayout最终宽高
         setMeasuredDimension(flowLayoutWidth,flowLayoutHeight)
 
-
-
     }
+
+    private fun remeasureChild(){
+        val size = views?.size!!
+        for (index in 0 until size){
+            val lineHeight = heights?.get(index)
+            val lineViews = views?.get(index)
+            for (index in 0 until (lineViews?.size?:0)){
+                val child = getChildAt(index)
+                val layoutParams = child.layoutParams
+                if(layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT){
+                    //todo 重新测量子View宽高
+                }
+            }
+
+        }
+    }
+
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var left = 0
