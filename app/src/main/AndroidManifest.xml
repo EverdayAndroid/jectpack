@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jetpackapp"
     xmlns:dist="http://schemas.android.com/apk/distribution">
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <dist:module dist:instant="true" />
     <application
         android:allowBackup="true"
@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".FlowActivity"/>
+        <activity android:name=".HomeActivity"/>
     </application>
 
 </manifest>
