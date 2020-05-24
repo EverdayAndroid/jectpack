@@ -20,11 +20,21 @@ class MyViewPage:ViewPager {
 //        return true
 //    }
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-    Log.e("MyViewPage=======>WT",ev?.action.toString())
+        super.onInterceptTouchEvent(ev)
         when(ev?.action){
             MotionEvent.ACTION_DOWN -> {
+                Log.e("MyViewPage=====>parent","ACTION_DOWN ${MotionEvent.ACTION_DOWN}")
                 super.onInterceptHoverEvent(ev)
                 return false
+            }
+            MotionEvent.ACTION_UP -> {
+                Log.e("MyViewPage=====>parent","ACTION_UP ${MotionEvent.ACTION_UP}")
+            }
+            MotionEvent.ACTION_MOVE -> {
+                Log.e("MyViewPage=====>parent","ACTION_MOVE ${MotionEvent.ACTION_MOVE}")
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                Log.e("MyViewPage=====>parent","ACTION_CANCEL ${MotionEvent.ACTION_CANCEL}")
             }
         }
         return true
