@@ -5,10 +5,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ListView
+import androidx.core.view.ViewConfigurationCompat
 import com.example.jetpackapp.R
 import java.lang.Exception
+import kotlin.math.abs
 
 /**
  * @date: 2020/5/15
@@ -29,9 +32,18 @@ class FlowLayout : ViewGroup {
     //每一行的高度
     private var heights: ArrayList<Int>? = null
 
+    private var mLastX = 0   //记录最后一次坐标
+    private var mLastY = 0   //记录最后一次坐标
+    private var mTochSlop = 0 //用来判断是不是第一次滑动
+    private var scrollable = false  //是否可以进行滑动
+    private var measureHeight = 0 //this本身高度
+    private var realHeight = 0 //标识内容的高度
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
+        val configuration = ViewConfiguration.get(context)
+        //获取滑动最小距离
+        mTochSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
     }
 
     fun init() {
@@ -47,18 +59,16 @@ class FlowLayout : ViewGroup {
         var heightMode = MeasureSpec.getMode(heightMeasureSpec)
         var heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
+        measureHeight = heightSize
         //记录当前行的宽度和高度
         var lineWidth = 0
         var lineHeight = 0
         //整个流式布局的宽度和高度
         var flowLayoutWidth = 0
         var flowLayoutHeight = 0
-
         //初始化
         init()
-
         val childCount = childCount
-
         //遍历所有的子view，对子view进行测量，分配到具体的行
         for (index in 0 until childCount) {
             val child = getChildAt(index)
@@ -93,14 +103,19 @@ class FlowLayout : ViewGroup {
         if (widthMode == MeasureSpec.EXACTLY) {
             flowLayoutWidth = widthSize
         }
-        //判断FlowLayout高度模式
-        if (heightMode == MeasureSpec.EXACTLY) {
-            flowLayoutHeight = heightSize
-        }
+
         //重新测量子view为 match_parent
         remeasureChild(widthMeasureSpec, heightMeasureSpec)
+        //如果
+        if(heightMode == MeasureSpec.EXACTLY){
+            flowLayoutHeight = heightSize.coerceAtLeast(flowLayoutHeight)
+        }
+        //this本身真实高度
+        realHeight = flowLayoutHeight
+        //是否可以进行滑动
+        scrollable = realHeight > measureHeight
         //FlowLayout最终宽高
-        setMeasuredDimension(flowLayoutWidth, flowLayoutHeight)
+        setMeasuredDimension(flowLayoutWidth, realHeight)
 
     }
 
@@ -162,20 +177,68 @@ class FlowLayout : ViewGroup {
         super.scrollTo(x, y)
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
+        var intercept:Boolean = false
+        var currentX = event?.x?.toInt()?:0
+        var currentY = event?.y?.toInt()?:0
 
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> ""
-            MotionEvent.ACTION_MOVE -> {
-                Log.e("EVERDAY","${event.x.toInt()} ==== ${event.y.toInt()}")
-                scrollBy(event.x.toInt(), event.y.toInt())
+        when(event?.action){
+            MotionEvent.ACTION_DOWN ->{
+                intercept = false
+                mLastX = event.x.toInt()
+                mLastY = event.y.toInt()
             }
-            MotionEvent.ACTION_UP -> ""
+            MotionEvent.ACTION_MOVE -> {
+                var dx = currentX - mLastX
+                var dy = currentY - mLastY
+                intercept = abs(dx) < abs(dy) && abs(dy) > mTochSlop
+            }
+            MotionEvent.ACTION_UP -> {
+                intercept = false
+            }
             MotionEvent.ACTION_CANCEL -> ""
         }
+        mLastX = currentX
+        mLastY = currentY
+        return intercept
+    }
 
+    var dy = 0
+    var oldMoveLastY = 0
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if(!scrollable){
+            return super.onTouchEvent(event)
+        }
+
+        var currentY = event?.y?.toInt()?:0
+
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                mLastY = currentY
+            }
+            MotionEvent.ACTION_MOVE -> {
+                var dy = mLastY - currentY
+                Log.e("dy","oldMoveLastY:$oldMoveLastY,move:$dy,realHeight:$realHeight ,flowHeight:$measureHeight ,realHeight-flowHeight=${(realHeight-measureHeight)}")
+                oldMoveLastY = scrollY
+                var currentMoveY = oldMoveLastY+dy
+                if(currentMoveY <= realHeight-measureHeight && currentMoveY >=0) {
+                    scrollTo(0, currentMoveY)
+                }
+                mLastY = currentY
+            }
+            MotionEvent.ACTION_UP -> {
+//                mLastY = currentY
+            }
+            MotionEvent.ACTION_CANCEL -> {
+
+            }
+        }
         return true
     }
+
+
+
+
 
     override fun generateLayoutParams(p: ViewGroup.LayoutParams?): ViewGroup.LayoutParams {
         return LayoutParams(p)

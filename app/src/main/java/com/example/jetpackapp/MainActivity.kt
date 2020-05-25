@@ -46,8 +46,8 @@ class MainActivity : BaseActivity<MainActivityModel,ActivityMainBinding>(),View.
         when(v?.id){
             R.id.btn -> {
                 Log.e("TAG",mBinding.mainDto!!.name)
-//                startActivity(Intent(this,FlowActivity::class.java))
-                startActivity(Intent(this,HomeActivity::class.java))
+                startActivity(Intent(this,FlowActivity::class.java))
+//                startActivity(Intent(this,HomeActivity::class.java))
             }
         }
     }
