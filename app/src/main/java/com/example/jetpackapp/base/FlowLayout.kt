@@ -3,13 +3,13 @@ package com.example.jetpackapp.base
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewConfiguration
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ListView
+import android.widget.OverScroller
+import android.widget.Scroller
 import androidx.core.view.ViewConfigurationCompat
 import com.example.jetpackapp.R
+import java.lang.Double.max
 import java.lang.Exception
 import kotlin.math.abs
 
@@ -38,12 +38,32 @@ class FlowLayout : ViewGroup {
     private var scrollable = false  //是否可以进行滑动
     private var measureHeight = 0 //this本身高度
     private var realHeight = 0 //标识内容的高度
+    private lateinit var mScroller:OverScroller
+    private var mMinimumVelocity = 0
+    private var mMaximumVelocity = 0
+    private var mOverscrollDistance = 0
+    //惯性
+    private lateinit var mVelocityTracker:VelocityTracker
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
         val configuration = ViewConfiguration.get(context)
         //获取滑动最小距离
         mTochSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
+        mScroller = OverScroller(context)
+        mMinimumVelocity = configuration.scaledMinimumFlingVelocity
+        mMaximumVelocity = configuration.scaledMaximumFlingVelocity
+        mOverscrollDistance = configuration.scaledOverscrollDistance
+
+    }
+
+    private fun initVelocityTrackerIfNotExists(){
+        mVelocityTracker = VelocityTracker.obtain()
+    }
+
+    private fun recycleVelocityTracker(){
+        //回收
+        mVelocityTracker?.recycle()
     }
 
     fun init() {
@@ -211,9 +231,14 @@ class FlowLayout : ViewGroup {
         }
 
         var currentY = event?.y?.toInt()?:0
-
+        initVelocityTrackerIfNotExists()
+        mVelocityTracker.addMovement(event)
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
+                //判断如果滑动没有停止，则进行停止处理
+                if(!(mScroller?.isFinished)){
+                    mScroller?.abortAnimation()
+                }
                 mLastY = currentY
             }
             MotionEvent.ACTION_MOVE -> {
@@ -223,20 +248,47 @@ class FlowLayout : ViewGroup {
                 var currentMoveY = oldMoveLastY+dy
                 if(currentMoveY <= realHeight-measureHeight && currentMoveY >=0) {
                     scrollTo(0, currentMoveY)
+                    mScroller?.startScroll(0,mScroller.finalY,0,dy)
+                    //触发computeScroll方法
+                    invalidate()
                 }
                 mLastY = currentY
             }
             MotionEvent.ACTION_UP -> {
 //                mLastY = currentY
-            }
-            MotionEvent.ACTION_CANCEL -> {
-
+                val mVelocityTracker = mVelocityTracker
+                mVelocityTracker.computeCurrentVelocity(1000,mMaximumVelocity.toFloat())
+                val yVelocity = mVelocityTracker.yVelocity.toInt()
+                if(abs(yVelocity) > mMinimumVelocity){
+                    fling(-yVelocity)
+                }else if(mScroller.springBack(scrollX,scrollY,0,0,0,realHeight-measureHeight)){
+                    postInvalidateOnAnimation()
+                }
             }
         }
-        return true
+        return super.onTouchEvent(event)
     }
 
+    private fun fling(velocity:Int){
+        if(childCount > 0 ){
+            mScroller.fling(scrollX,scrollY,0,velocity,0,0,
+                0.coerceAtLeast(realHeight - measureHeight),0,
+                0,measureHeight/2
+            )
+            postInvalidateOnAnimation()
+        }
+    }
 
+    override fun computeScroll() {
+        super.computeScroll()
+        mScroller?.let {
+            //true标识还在滑动，false标识已停止滑动
+            if(it.computeScrollOffset()){
+                scrollTo(0,it.currY)
+                postInvalidate()
+            }
+        }
+    }
 
 
 
