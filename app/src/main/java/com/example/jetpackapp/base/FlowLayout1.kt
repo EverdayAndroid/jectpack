@@ -19,7 +19,7 @@ import kotlin.math.abs
  * 2.通过动画给View添加位移效果实现滑动  （补间动画没有真正改变View位置）
  * 3.通过改变View的layoutparams 让View重新布局从而实现滑动
  */
-class FlowLayout : ViewGroup {
+class FlowLayout1 : ViewGroup {
     //每一行的子view
     private var lineViews: ArrayList<View>? = null
 
@@ -35,10 +35,6 @@ class FlowLayout : ViewGroup {
     private var scrollable = false  //是否可以进行滑动
     private var measureHeight = 0 //this本身高度
     private var realHeight = 0 //标识内容的高度
-    private lateinit var mScroller:Scroller
-    private var mMinimumVelocity = 0
-    private var mMaximumVelocity = 0
-    private var mOverscrollDistance = 0
     //惯性
     private lateinit var mVelocityTracker:VelocityTracker
     constructor(context: Context) : super(context)
@@ -47,23 +43,9 @@ class FlowLayout : ViewGroup {
         val configuration = ViewConfiguration.get(context)
         //获取滑动最小距离
         mTochSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
-        mScroller = Scroller(context)
-        mMinimumVelocity = configuration.scaledMinimumFlingVelocity
-        mMaximumVelocity = configuration.scaledMaximumFlingVelocity
-        mOverscrollDistance = configuration.scaledOverscrollDistance
-
     }
 
-    private fun initVelocityTrackerIfNotExists(){
-        mVelocityTracker = VelocityTracker.obtain()
-    }
-
-    private fun recycleVelocityTracker(){
-        //回收
-        mVelocityTracker?.recycle()
-    }
-
-    fun init() {
+    private fun init() {
         lineViews = ArrayList()
         views = ArrayList()
         heights = ArrayList()
@@ -186,14 +168,6 @@ class FlowLayout : ViewGroup {
         }
     }
 
-    override fun scrollBy(x: Int, y: Int) {
-        super.scrollBy(x, y)
-    }
-
-    override fun scrollTo(x: Int, y: Int) {
-        super.scrollTo(x, y)
-    }
-
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
         var intercept:Boolean = false
         var currentX = event?.x?.toInt()?:0
@@ -217,41 +191,29 @@ class FlowLayout : ViewGroup {
         }
         mLastX = currentX
         mLastY = currentY
+        Log.e("scroller","intercept:$intercept")
         return intercept
     }
 
     var dy = 0
     var oldMoveLastY = 0
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.e("scroller","$scrollable  ${event?.action}")
         if(!scrollable){
             return super.onTouchEvent(event)
         }
 
         var currentY = event?.y?.toInt()?:0
-        initVelocityTrackerIfNotExists()
-        mVelocityTracker.addMovement(event)
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                //判断如果滑动没有停止，则进行停止处理
-                if(!(mScroller?.isFinished)){
-                    mScroller?.abortAnimation()
-                }
                 mLastY = currentY
             }
             MotionEvent.ACTION_MOVE -> {
                 var dy = mLastY - currentY  //计算偏移数值
                 oldMoveLastY = scrollY  //获取当前Y轴数值
                 var currentMoveY = oldMoveLastY + dy  //根据Y轴数值+移动偏移量===滑动数值
-                //todo 查询event.rawY相关资料
+                  //todo 查询event.rawY相关资料
 //                var currentMoveY = (mLastY - event.rawY).toInt()
-//                Log.e("DY","$currentMoveY == $mLastX - $currentY   realHeight:$realHeight - measureHeight:$measureHeight")
-//                var currentMoveY = oldMoveLastY+dy
-//                if(currentMoveY <= realHeight-measureHeight && currentMoveY >=0) {
-//                    scrollBy(0, dy)
-//                    mScroller?.startScroll(0,mScroller.finalY,0,dy)
-//                    //触发computeScroll方法
-//                    invalidate()
-//                }
                 when {
                     currentMoveY < 0 -> {
                         currentMoveY = 0
@@ -260,10 +222,7 @@ class FlowLayout : ViewGroup {
                         currentMoveY = realHeight -measureHeight
                     }
                 }
-                //Scroller：通过scroller来实现快速滑动效果
-                mScroller?.startScroll(0,mScroller.finalY,0,dy)
-                invalidate()
-//                scrollTo(0, currentMoveY)
+                scrollTo(0, currentMoveY)
                 mLastY = currentY
             }
             MotionEvent.ACTION_UP -> {
@@ -273,33 +232,8 @@ class FlowLayout : ViewGroup {
         return super.onTouchEvent(event)
     }
 
-    override fun computeScroll() {
-        super.computeScroll()
-
-        mScroller?.let {
-            //true标识还在滑动，false标识已停止滑动      2868   1922
-            if(it.computeScrollOffset()){
-                var currY = mScroller.currY
-                if (currY < 0) {
-                    currY = 0
-                }
-                if (currY > realHeight - measureHeight) {
-                    currY = realHeight - measureHeight
-                }
-                Log.e("scroller","$currY")
-                scrollTo(it.currX,currY)
-                postInvalidate()
-            }
-        }
-    }
 
 
-    override fun computeVerticalScrollOffset(): Int {
-
-        val timePassed = mScroller.timePassed()
-
-        return super.computeVerticalScrollOffset()
-    }
 
 
     override fun generateLayoutParams(p: ViewGroup.LayoutParams?): ViewGroup.LayoutParams {

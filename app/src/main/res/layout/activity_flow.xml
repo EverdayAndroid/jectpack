@@ -14,9 +14,10 @@
             type="android.view.View.OnClickListener" />
     </data>
 
-    <com.example.jetpackapp.base.FlowLayout
+    <com.example.jetpackapp.base.FlowLayout1
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
 
         <Button
             android:layout_width="wrap_content"
@@ -212,5 +213,5 @@
             android:text="wt13" />
 
 
-    </com.example.jetpackapp.base.FlowLayout>
+    </com.example.jetpackapp.base.FlowLayout1>
 </layout>
