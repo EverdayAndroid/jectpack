@@ -173,7 +173,6 @@ class FlowLayout : ViewGroup {
             val lineHeight = heights!![index]
             left = 0
             top = currentY
-            Log.e("FlowLayout", "top=====>  $top")
             for (index in 0 until lineView.size) {
                 val child = lineView[index]
                 right += child.measuredWidth
@@ -239,19 +238,9 @@ class FlowLayout : ViewGroup {
                 mLastY = currentY
             }
             MotionEvent.ACTION_MOVE -> {
-                var dy = mLastY - currentY  //计算偏移数值
+                dy = mLastY - currentY  //计算偏移数值
                 oldMoveLastY = scrollY  //获取当前Y轴数值
                 var currentMoveY = oldMoveLastY + dy  //根据Y轴数值+移动偏移量===滑动数值
-                //todo 查询event.rawY相关资料
-//                var currentMoveY = (mLastY - event.rawY).toInt()
-//                Log.e("DY","$currentMoveY == $mLastX - $currentY   realHeight:$realHeight - measureHeight:$measureHeight")
-//                var currentMoveY = oldMoveLastY+dy
-//                if(currentMoveY <= realHeight-measureHeight && currentMoveY >=0) {
-//                    scrollBy(0, dy)
-//                    mScroller?.startScroll(0,mScroller.finalY,0,dy)
-//                    //触发computeScroll方法
-//                    invalidate()
-//                }
                 when {
                     currentMoveY < 0 -> {
                         currentMoveY = 0
@@ -260,14 +249,14 @@ class FlowLayout : ViewGroup {
                         currentMoveY = realHeight -measureHeight
                     }
                 }
-                //Scroller：通过scroller来实现快速滑动效果
-                mScroller?.startScroll(0,mScroller.finalY,0,dy)
-                invalidate()
-//                scrollTo(0, currentMoveY)
+
+                scrollTo(0, currentMoveY)
                 mLastY = currentY
             }
             MotionEvent.ACTION_UP -> {
-
+                //Scroller：通过scroller来实现快速滑动效果
+                mScroller?.startScroll(0,mScroller.finalY,0,dy)
+                invalidate()
             }
         }
         return super.onTouchEvent(event)
@@ -288,7 +277,7 @@ class FlowLayout : ViewGroup {
                 }
                 Log.e("scroller","$currY")
                 scrollTo(it.currX,currY)
-                postInvalidate()
+                invalidate()
             }
         }
     }
