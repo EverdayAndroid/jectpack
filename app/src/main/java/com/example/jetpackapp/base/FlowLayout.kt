@@ -18,6 +18,8 @@ import kotlin.math.abs
  * 1.通过View的ScrollBy 和ScrollTo 方法实现滑动
  * 2.通过动画给View添加位移效果实现滑动  （补间动画没有真正改变View位置）
  * 3.通过改变View的layoutparams 让View重新布局从而实现滑动
+ *
+ * todo 在什么时候给View赋值width，height？？？
  */
 class FlowLayout : ViewGroup {
     //每一行的子view
@@ -94,7 +96,6 @@ class FlowLayout : ViewGroup {
             var childWidth = child.measuredWidth
             var childHeight = child.measuredHeight
 
-            val layoutParams = child.layoutParams
             //当前的行剩余宽度是否可以放的下，下一个子View放不下换行
             //如果放不下，换行保存当前行的所有子View宽度，和高度
             if (lineWidth + childWidth > widthSize) {
@@ -135,31 +136,30 @@ class FlowLayout : ViewGroup {
         setMeasuredDimension(flowLayoutWidth, realHeight)
 
     }
-
+    //重新测量View 模式为MACH_PARENT
     private fun remeasureChild(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val size = views?.size!!
+        var childWidthMeasureSpec = 0
+        var childHeightMeasureSpec = 0
         for (index in 0 until size) {
-            val lineHeight = heights?.get(index)
             val lineViews = views?.get(index)
             for (index in 0 until (lineViews?.size ?: 0)) {
                 val child = getChildAt(index)
                 val layoutParams = child.layoutParams
-//                if(child.measuredHeight < desiredHeight)
-
-                val desiredHeight = measuredHeight
+                //通过父控件Spec 获取子View Spec
                 if (layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-                    val childWidthMeasureSpec =
+                    childWidthMeasureSpec =
                         getChildMeasureSpec(widthMeasureSpec, 0, layoutParams.width)
-                    val childHeightMeasureSpec =
-                        getChildMeasureSpec(heightMeasureSpec, 0, layoutParams.height)
-                    //todo 重新测量子View宽高
-                    child.measure(childWidthMeasureSpec, childHeightMeasureSpec)
                 }
+                if(layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT){
+                    childHeightMeasureSpec =
+                        getChildMeasureSpec(heightMeasureSpec, 0, layoutParams.height)
+                }
+                child.measure(childWidthMeasureSpec, childHeightMeasureSpec)
             }
 
         }
     }
-
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var left = 0
@@ -207,13 +207,20 @@ class FlowLayout : ViewGroup {
             MotionEvent.ACTION_MOVE -> {
                 var dx = currentX - mLastX
                 var dy = currentY - mLastY
-                intercept = abs(dx) < abs(dy) && abs(dy) > mTochSlop
+                Log.e("scroller","onInterceptTouchEvent====$currentX - $mLastX    ;" +
+                        " ${event.x}    ${event.y}" +
+                        "" +
+                        " ;   $currentY - $mLastY")
+
+                //intercept = abs(dx) < abs(dy) && abs(dy) > mTochSlop
+                intercept = abs(dy) > abs(dx)
             }
             MotionEvent.ACTION_UP -> {
                 intercept = false
             }
             MotionEvent.ACTION_CANCEL -> ""
         }
+        Log.e("scroller","onInterceptTouchEvent====$intercept")
         mLastX = currentX
         mLastY = currentY
         return intercept
@@ -221,11 +228,12 @@ class FlowLayout : ViewGroup {
 
     var dy = 0
     var oldMoveLastY = 0
+    var mLastY1 = 0
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if(!scrollable){
             return super.onTouchEvent(event)
         }
-
+        Log.e("scroller","onTouchEvent====${event?.action}")
         var currentY = event?.y?.toInt()?:0
         initVelocityTrackerIfNotExists()
         mVelocityTracker.addMovement(event)
@@ -249,14 +257,16 @@ class FlowLayout : ViewGroup {
                         currentMoveY = realHeight -measureHeight
                     }
                 }
-
-                scrollTo(0, currentMoveY)
+//                scrollTo(0, currentMoveY)
+                mScroller?.startScroll(0,mScroller.finalY,0,dy)
+                invalidate()
                 mLastY = currentY
             }
             MotionEvent.ACTION_UP -> {
-                //Scroller：通过scroller来实现快速滑动效果
-                mScroller?.startScroll(0,mScroller.finalY,0,dy)
-                invalidate()
+//                dy = mLastY - currentY  //计算偏移数值
+//                //Scroller：通过scroller来实现快速滑动效果
+//                mScroller?.startScroll(0,mScroller.finalY,0,dy)
+//                invalidate()
             }
         }
         return super.onTouchEvent(event)
@@ -275,19 +285,10 @@ class FlowLayout : ViewGroup {
                 if (currY > realHeight - measureHeight) {
                     currY = realHeight - measureHeight
                 }
-                Log.e("scroller","$currY")
                 scrollTo(it.currX,currY)
-                invalidate()
+                postInvalidate()
             }
         }
-    }
-
-
-    override fun computeVerticalScrollOffset(): Int {
-
-        val timePassed = mScroller.timePassed()
-
-        return super.computeVerticalScrollOffset()
     }
 
 

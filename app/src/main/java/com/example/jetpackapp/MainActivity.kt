@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Display
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.lifecycle.Observer
 import com.example.jetpackapp.base.BaseActivity
 import com.example.jetpackapp.base.LiveBus
@@ -45,7 +46,9 @@ class MainActivity : BaseActivity<MainActivityModel,ActivityMainBinding>(),View.
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btn -> {
+//                val currentAnimationTimeMillis = AnimationUtils.currentAnimationTimeMillis()
                 Log.e("TAG",mBinding.mainDto!!.name)
+//                Log.e("TAG","$currentAnimationTimeMillis")
                 startActivity(Intent(this,FlowActivity::class.java))
 //                startActivity(Intent(this,HomeActivity::class.java))
             }
