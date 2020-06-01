@@ -1,15 +1,12 @@
 package com.example.jetpackapp
 
 import android.content.Intent
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.Display
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AnimationUtils
 import androidx.lifecycle.Observer
+import com.example.jetpackapp.animation.AnimationUtils
 import com.example.jetpackapp.base.BaseActivity
-import com.example.jetpackapp.base.LiveBus
 import com.example.jetpackapp.databinding.ActivityMainBinding
 import com.example.jetpackapp.entity.MainDto
 import com.example.jetpackapp.model.MainActivityModel
@@ -46,6 +43,7 @@ class MainActivity : BaseActivity<MainActivityModel,ActivityMainBinding>(),View.
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btn -> {
+//                AnimationUtils.getObjectAnimatorByPropertyValuesHolder(btn).start()
 //                val currentAnimationTimeMillis = AnimationUtils.currentAnimationTimeMillis()
                 Log.e("TAG",mBinding.mainDto!!.name)
 //                Log.e("TAG","$currentAnimationTimeMillis")

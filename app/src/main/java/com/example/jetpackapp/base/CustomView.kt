@@ -1,14 +1,13 @@
 package com.example.jetpackapp.base
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.RequiresApi
 import com.example.jetpackapp.R
 import com.example.jetpackapp.utils.DisplayUtils
 import kotlin.math.abs
@@ -61,6 +60,7 @@ class CustomView : View {
     private var maxWidth:Int = 0
     private var maxHeight:Int = 0
     private var maxTop:Int = 0
+    private lateinit var mShader:Shader
     constructor(context: Context)
             : super(context) {
             initPaint()
@@ -115,6 +115,10 @@ class CustomView : View {
         mTextPaint.getTextBounds(textMsg,0,textMsg.length,recf)
         textMsgWidth = recf.width()
         textMsgHeight = recf.height()
+        //渐变器
+        mShader = RadialGradient(custome_widht
+            ,custome_height
+            ,radius.toFloat(), Color.BLUE,Color.CYAN,Shader.TileMode.MIRROR)
     }
 
 
@@ -125,6 +129,7 @@ class CustomView : View {
         custome_height = h.toFloat()
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         Log.e("TAG","onDraw")
@@ -132,6 +137,7 @@ class CustomView : View {
         val viewY = -custome_height/2
         canvas?.translate(viewX,viewY)
 //        canvas?.drawColor(background_Color)
+        mPaint.shader = mShader
         canvas?.drawCircle(custome_widht,custome_height,radius.toFloat(),mPaint)
 //        canvas?.drawText(textMsg,left+radius-(textMsgWidth/2),right-radius+(textMsgWidth/2),mTextPaint)
         canvas?.drawText(textMsg,width-(textMsgWidth/2).toFloat(),height+(textMsgHeight/2).toFloat(),mTextPaint)
