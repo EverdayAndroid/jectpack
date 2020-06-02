@@ -1,21 +1,19 @@
 package com.example.canvas.widget
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 /**
   * @date: 2020/5/31
   * @author: wangTao
   * @email: wangtaohandsome@gmail.com
-  * @desc:  画布  保存和回滚方法 save、restore
+  * @desc:  画布  绘制文字
  */
-class CanvasSaveView:View {
+class CanvasTextView:View {
     private var mDensity = 0f
     private lateinit var mPaint:Paint
+    private var msg:String = "风萧萧易水寒，壮士一去不复返"
     constructor(context: Context):super(context){
         init()
     }
@@ -30,32 +28,15 @@ class CanvasSaveView:View {
         mPaint.color = Color.LTGRAY
         mPaint.isAntiAlias = true
         mPaint.strokeWidth = mDensity
+        mPaint.textSize = 20*mDensity
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-
-        canvas?.drawColor(Color.CYAN)
-        canvas?.save()
-
-        canvas?.clipRect(RectF(100f,100f,800f,800f))
-        canvas?.drawColor(Color.DKGRAY)
-        canvas?.save()
-
-        canvas?.clipRect(RectF(200f,200f,700f,700f))
-        canvas?.drawColor(Color.LTGRAY)
-        canvas?.save()
-
-
-        canvas?.clipRect(RectF(300f,300f,600f,600f))
-        canvas?.drawColor(Color.WHITE)
-        canvas?.save()
-
-
-        //回滚上一次save之前的画布
-//        canvas?.restore()
-
-        canvas?.drawColor(Color.RED)
+        mPaint.setShadowLayer(5f,0f,0f,Color.CYAN)
+//        mPaint.shader = SweepGradient(20f, 10f, Color.YELLOW, Color.RED)
+        val measureText = mPaint.measureText(msg)
+        canvas?.drawText(msg,100f,100f,mPaint)
     }
 }
