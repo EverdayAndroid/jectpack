@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="mainDto"
+            type="com.example.jetpackapp.entity.MainDto" />
+
+        <variable
+            name="listene"
+            type="android.view.View.OnClickListener" />
+    </data>
+    <com.example.jetpackapp.widget.MyScrollView
+        android:layout_width="match_parent"
+        android:layout_height="1800dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <com.example.jetpackapp.widget.MyHorizontal
+                android:layout_width="1200dp"
+                android:layout_height="300dp"
+                android:background="@color/colorAccent"/>
+        </LinearLayout>
+
+    </com.example.jetpackapp.widget.MyScrollView>
+
+</layout>
